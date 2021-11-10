@@ -13,7 +13,10 @@ import {
   Story,
   MCQQuiz,
   Answer,
-  Summary
+  TextAnswer,
+  Summary,
+  Link,
+  TQQuiz
 } from './src/screens'
 
 const Stack = createStackNavigator()
@@ -35,8 +38,11 @@ export default function App() {
           <Stack.Screen name="QuizIndex" component={QuizIndex} />
           <Stack.Screen name="Story" component={Story} />
           <Stack.Screen name="MCQQuiz" component={MCQQuiz}/>
+          <Stack.Screen name="TQQuiz" component={TQQuiz}/>
           <Stack.Screen name="Answer" component={Answer}/>
+          <Stack.Screen name="TextAnswer" component={TextAnswer}/>
           <Stack.Screen name="Summary" component={Summary}/>
+          <Stack.Screen name="Link" component={Link}/>
           <Stack.Screen
             name="ResetPasswordScreen"
             component={ResetPasswordScreen}
