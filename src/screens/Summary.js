@@ -5,7 +5,7 @@ import Paragraph from '../components/Paragraph'
 import Router from '../data/router';
 const Summary = ({route,navigation}) =>{
     const {token,topic,totalpoint,wholepoint} = route.params;
-    
+  
     const unknownHandler=() =>{
         navigation.reset({
             index: 0,
@@ -42,7 +42,32 @@ const Summary = ({route,navigation}) =>{
             };
         });
     }
-   
+  const linkHandler = () =>{
+    let url = Router.host+Router.getlink
+    let body = {
+      "token":token,
+      "topic_name":topic
+    }
+    fetch(url, {
+        method: "POST",
+        body: JSON.stringify(body)
+      })
+      .then(response => response.json())
+      .then(json => {
+        if(json.Result){
+          let content = json.Content;
+          let link = content.Link;
+          console.log(link);
+          navigation.navigate('Link', {
+            link: link,
+              });
+        }else{
+          Alert.alert(json.Object,json.Content,
+              [{text:'未知錯誤',style:'cancel',onPress:unknownHandler}]
+              );
+        };
+    });
+  }
     return(
         <ScrollView style={styles.container}>
             <StatusBar barStyle="light-content" />
@@ -57,6 +82,7 @@ const Summary = ({route,navigation}) =>{
             </Button>
             <Button 
                 mode="contained" 
+                onPress = {linkHandler}
                 >
                 了解更多
             </Button>

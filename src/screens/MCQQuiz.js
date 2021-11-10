@@ -1,9 +1,18 @@
 import React from 'react';
 import { View, StyleSheet, StatusBar, Text, SafeAreaView, Alert ,ScrollView} from "react-native";
-import { RowItem } from '../components/RowItem';
+import { RowItemSelect } from '../components/RowItemSelect';
 import Router from '../data/router';
+import Background from '../components/Background'
+import { Card } from 'react-native-elements';
+import { getStatusBarHeight } from 'react-native-status-bar-height';
+
 const MCQQuiz = ({ route, navigation }) =>{
     const {token,topic,question,choices,color,hint,groupid} = route.params;
+    const restartHandler = () =>{
+      navigation.reset({
+          index: 0,
+          routes: [{ name: 'StartScreen' }],})
+  };
     const answerHandler = (choice) => {
         let url = Router.host+Router.passmcq
         let body = {
@@ -21,7 +30,7 @@ const MCQQuiz = ({ route, navigation }) =>{
         .then(json => {
             if(json.Result){
                 let content = json.Content;
-                navigation.navigate("Answer",{
+                navigation.push("Answer",{
                     token:token,
                     title:question.QuestionTitle,
                     question:question,
@@ -32,9 +41,15 @@ const MCQQuiz = ({ route, navigation }) =>{
                     hint:hint
                 });
             }else{
+              if(json.Content === '權杖失效'){
                 Alert.alert(json.Object,json.Content,
-                    [{text:'再試一次',style:'cancel'}]
-                    );
+                  [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+                  );
+              }else{
+                Alert.alert(json.Object,json.Content,
+                  [{text:'再試一次',style:'cancel'}]
+                  );
+              }
             }
           /*navigation.reset({
             index: 0,
@@ -43,50 +58,67 @@ const MCQQuiz = ({ route, navigation }) =>{
         });
       }
     return(
-        <ScrollView
-        style={[
-        styles.container,
-        { backgroundColor: color}
-        ]}>
-            <StatusBar barStyle="light-content" />
-            <SafeAreaView style={styles.safearea}>
-                <View>
-                <Text style={styles.title}>{question.QuestionID+". "+question.QuestionTitle}</Text>
-                <Text style={styles.text}>{question.Question}</Text>
-                {choices.map(choice => {
-                    return <RowItem key={choice.Order} name={choice.Choice} color="#799496" onPress={answerHandler.bind(this,choice.Order)}/>
-                })}
-                </View>
-            </SafeAreaView>
-        </ScrollView>
+      <Background>
+        <StatusBar barStyle="dark-content" />
+        <SafeAreaView style={styles.safearea}>
+          <View style={styles.container}>
+          <Card containerStyle={styles.card} >
+            <Text style={styles.title}>{question.QuestionID+". "+question.QuestionTitle}</Text>
+            <Text style={styles.text}>{question.Question}</Text>
+          </Card>
+          </View>
+
+          
+          <ScrollView>
+            {/* <SafeAreaView style={styles.safearea}> */}
+                {/* //<View> */}
+                
+            {choices.map(choice => {
+              return <RowItemSelect key={choice.Order} name={choice.Choice} onPress={answerHandler.bind(this,choice.Order)}/>
+            })}
+          </ScrollView>
+               {/* </View> */}
+          </SafeAreaView>
+        
+        
+      </Background>
     );
 };
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: "#36B1F0",
-      flex: 1,
-      paddingHorizontal: 20
+      flex: 0,
+      //marginTop: 16,
+      width: 366,
+      marginTop: 8 + getStatusBarHeight()
     },
+
     title:{
-        color: "#fff",
-        fontSize: 28,
-        textAlign: "left",
-        letterSpacing: -0.02,
-        fontWeight: "600",
-        marginBottom:10
+      marginHorizontal: 24,
+      marginTop: 32,
+      fontSize: 24,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      color: '#144385',
+      opacity: 1,
     },
     text: {
-      color: "#fff",
-      fontSize: 20,
-      textAlign: 'left',
-      letterSpacing: -0.02,
-      fontWeight: "400",
-      marginBottom:30
+      marginHorizontal: 24,
+      marginVertical: 16,
+      marginBottom: 32,
+      fontSize: 18,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      color: '#000',
     },
     safearea: {
-      flex: 1,
-      marginTop: 100,
-      justifyContent: "space-between"
+      //flex: 0,
+      //marginTop: 100,
+      justifyContent: "space-between",
+      justifyContent: 'center',
+    },
+    card: {
+      padding: 0,
+      borderRadius: 8
     }
   });
   

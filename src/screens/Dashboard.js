@@ -10,6 +10,11 @@ import Router from '../data/router';
 import { createIconSetFromFontello } from 'react-native-vector-icons'
 export default function Dashboard({ route, navigation }) {
   const {token,isvillager,username,points} = route.params;
+  const restartHandler = () =>{
+    navigation.reset({
+        index: 0,
+        routes: [{ name: 'StartScreen' }],})
+};
   const quizIndexHandler = () => {
     let url = Router.host+Router.quizIndex
     let body = {
@@ -28,19 +33,55 @@ export default function Dashboard({ route, navigation }) {
         navigation.navigate('QuizIndex', {
           token: token,
           topics: topics,
-          isvillager: isvillager
+          isvillager: isvillager,
+          type:"mcq"
         })
       }else{
-        Alert.alert(json.Object,json.Content,
+        if(json.Content === '權杖失效'){
+          Alert.alert(json.Object,json.Content,
+            [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+            );
+        }else{
+          Alert.alert(json.Object,json.Content,
             [{text:'再試一次',style:'cancel'}]
             );
+        }
       };
     });
   };
   const textquizIndexHandler = () =>{
-    navigation.navigate('StartScreen', {//問答介面還沒做
-    token: token
+    let url = Router.host+Router.quizIndex
+    let body = {
+      "token":token,
+      "type":"tq"
+    }
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify(body)
     })
+    .then(response => response.json())
+    .then(json => {
+      if(json.Result){
+        let content = json.Content;
+        let topics  = content.Topic;
+        navigation.navigate('QuizIndex', {
+          token: token,
+          topics: topics,
+          isvillager: isvillager,
+          type:"tq"
+        })
+      }else{
+        if(json.Content === '權杖失效'){
+          Alert.alert(json.Object,json.Content,
+            [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+            );
+        }else{
+          Alert.alert(json.Object,json.Content,
+            [{text:'再試一次',style:'cancel'}]
+            );
+        }
+      };
+    });
   };
   const prizeHandler = () =>{
     navigation.navigate('StartScreen', {//問答介面還沒做

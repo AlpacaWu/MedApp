@@ -17,9 +17,14 @@ import Router from '../data/router';
 
 
 export default function Story({  route,navigation }) {
-  const {token,content,isvillager} = route.params;
+  const {token,content,isvillager,type} = route.params;
   const [code, setCode] = useState({ value: '', error: '' })
   let hint;
+  const restartHandler = () =>{
+    navigation.reset({
+        index: 0,
+        routes: [{ name: 'StartScreen' }],})
+};
   const onCodePressed = () => {
     if(!isvillager){
       const codeError = codeValidator(code.value)
@@ -29,11 +34,12 @@ export default function Story({  route,navigation }) {
       }
     };
     let url = Router.host+Router.startgame
+    console.log(url);
     let body = {
       "token":token,
       "topic_name":content.Topic,
       "code":code.value,
-      "type":"mcq"
+      "type":type
     }
     fetch(url, {
       method: "POST",
@@ -41,32 +47,50 @@ export default function Story({  route,navigation }) {
     })
     .then(response => response.json())
     .then(json => {
+      console.log(json);
       if(json.Result){
         let content = json.Content;
-        if(isvillager){
-          navigation.navigate("MCQQuiz", {
-            token:token,
-            topic:content.Topic,
-            question: content.Question,
-            choices: content.Choice,
-            hint:content.Hint,
-            groupid:content.GroupID,
-            color: "#36b1f0"
-          });
+        if(content.Type === 'mcq'){
+          if(isvillager){
+            navigation.navigate("MCQQuiz", {
+              token:token,
+              topic:content.Topic,
+              question: content.Question,
+              choices: content.Choice,
+              hint:content.Hint,
+              groupid:content.GroupID,
+              color: "#36b1f0"
+            });
+          }else{
+            navigation.navigate("MCQQuiz", {
+              token:token,
+              topic: content.Topic,
+              question: content.Question,
+              choices: content.Choice,
+              groupid:content.GroupID,
+              color: "#36b1f0"
+            });
+          };
         }else{
-          navigation.navigate("MCQQuiz", {
+          navigation.navigate("TQQuiz", {
             token:token,
             topic: content.Topic,
             question: content.Question,
-            choices: content.Choice,
             groupid:content.GroupID,
             color: "#36b1f0"
           });
-        };
+        }
+        
       }else{
-        Alert.alert(json.Object,json.Content,
+        if(json.Content === '權杖失效'){
+          Alert.alert(json.Object,json.Content,
+            [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+            );
+        }else{
+          Alert.alert(json.Object,json.Content,
             [{text:'再試一次',style:'cancel'}]
             );
+        }
       };
     });
   }
@@ -89,7 +113,7 @@ export default function Story({  route,navigation }) {
       <Title>{content.Topic}</Title>
         <SafeAreaView style={styles.container}>
           <View style={styles.container}>
-            <Card>
+            <Card containerStyle={{borderRadius: 8}}>
               {/*react-native-elements Card*/}
               <Paragraph style={styles.paragraph}>
               {content.Content}
@@ -114,10 +138,11 @@ export default function Story({  route,navigation }) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: 'center',
+      //alignItems: 'center',
       justifyContent: 'center',
-      paddingTop: 0,
-      opacity: 0.8,
+      paddingTop: 64,
+      //opacity: 0.8,
+      width: 366,
     },
     paragraph: {
       marginHorizontal: 16,

@@ -6,19 +6,24 @@ import Button from '../components/Button'
 import BlueButton from '../components/BlueButton'
 import Paragraph from '../components/Paragraph'
 import { View } from 'react-native'
-import { ScrollView, StatusBar, SafeAreaView, StyleSheet, Text} from "react-native"
+import { ScrollView, StatusBar, SafeAreaView, StyleSheet, Text,Alert} from "react-native"
 import BackButton from '../components/BackButton'
 import { RowItem } from '../components/RowItem';
 import { getStatusBarHeight } from 'react-native-status-bar-height'
 import Router from '../data/router';
 export default function QuizIndex({ route,navigation }) {
-  const {token,topics,isvillager} = route.params;
+  const {token,topics,isvillager,type} = route.params;
+  const restartHandler = () =>{
+    navigation.reset({
+        index: 0,
+        routes: [{ name: 'StartScreen' }],})
+};
   const quizHandler = key => {
     let url = Router.host+Router.quiz;
     let body = {
       "token":token,
       "topic_id":key,
-      "type":"mcq"
+      "type":type
     }
     fetch(url, {
       method: "POST",
@@ -31,12 +36,19 @@ export default function QuizIndex({ route,navigation }) {
         navigation.navigate('Story', {
           token: token,
           content: content,
-          isvillager:isvillager
+          isvillager:isvillager,
+          type:type
         })
       }else{
-        Alert.alert(json.Object,json.Content,
+        if(json.Content === '權杖失效'){
+          Alert.alert(json.Object,json.Content,
+            [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+            );
+        }else{
+          Alert.alert(json.Object,json.Content,
             [{text:'再試一次',style:'cancel'}]
             );
+        }
       };
     });
   }

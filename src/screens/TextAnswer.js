@@ -8,28 +8,32 @@ import { Card } from 'react-native-elements';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import Logo from '../components/Logo'
 
-const Answer =({route,navigation})=>{
-    const {token,title,topic,question,mychoice,rightchoice,mcqid,hint} = route.params;
+const TextAnswer =({route,navigation})=>{
+    const {token,title,topic,question,myanswer,rightanswer,tqid,point,totalpoint} = route.params;
     let youranswer;
     let icon;
-    if(mychoice === rightchoice){
+    let titletext;
+    if (question.QuestionTitle){
+        titletext = <Text style={styles.title}>{question.QuestionID+". "+question.QuestionTitle}</Text>
+    }else{
+        titletext =<Text style={styles.title}>{question.QuestionID+". "}</Text>
+    }
+    if(point >= (totalpoint*0.5)){
         youranswer =
         <Card containerStyle={styles.greencard}>
         <Text style={styles.answertitle}>{"你的答案"}</Text>
-        <Text style={styles.answertext}>{mychoice}</Text>
+        <Text style={styles.answertext}>{myanswer}</Text>
         </Card>
         icon = 
-        <Image source={require('../assets/correct.png')} style={styles.icon}/>
+        <Text style={styles.icon}>{point}</Text>
     }else{
         youranswer =
         <Card containerStyle={styles.redcard}>
         <Text style={styles.answertitle}>{"你的答案"}</Text>
-        <Text style={styles.answertext}>{mychoice}{"\n"}</Text>
-        <Text style={styles.answertitle}>{"正確答案"}</Text>
-        <Text style={styles.answertext}>{rightchoice}</Text>
+        <Text style={styles.answertext}>{myanswer}{"\n"}</Text>
         </Card>
         icon = 
-        <Image source={require('../assets/wrong.png')} style={styles.icon}/>
+        <Text style={styles.icon}>{point}</Text>
 
     }
     
@@ -38,8 +42,8 @@ const Answer =({route,navigation})=>{
         let body = {
             "token":token,
             "topic_name":topic,
-            "mcqid":mcqid,
-            "type":"mcq"
+            "tqid":tqid,
+            "type":"tq"
         }
         fetch(url, {
         method: "POST",
@@ -59,26 +63,13 @@ const Answer =({route,navigation})=>{
             }else{
                 let info = content.Info;
                 let returnquestion = content.Question
-                if(info.isvillager){
-                    navigation.push("MCQQuiz", {
-                        token:token,
-                        topic:returnquestion.Topic,
-                        question: returnquestion,
-                        choices: returnquestion.Choice,
-                        hint:returnquestion.Hint,
-                        groupid:returnquestion.GroupID,
-                        color: "#36b1f0"
-                    });
-                }else{
-                    navigation.push("MCQQuiz", {
-                        token:token,
-                        topic: returnquestion.Topic,
-                        question: returnquestion,
-                        choices: returnquestion.Choice,
-                        groupid:returnquestion.GroupID,
-                        color: "#36b1f0"
-                    });
-                };
+                navigation.push("TQQuiz", {
+                    token:token,
+                    topic:returnquestion.Topic,
+                    question: returnquestion,
+                    groupid:returnquestion.GroupID,
+                    color: "#36b1f0"
+                });
             } 
         }else{
             Alert.alert(json.Object,json.Content,
@@ -96,15 +87,15 @@ const Answer =({route,navigation})=>{
             <Card containerStyle={styles.card}>
             <View style={styles.safearea}>
             {icon}
-            <Text style={styles.title}>{question.QuestionID+". "+question.QuestionTitle}</Text>
+            {titletext}
             <Text style={styles.text}>{question.Question}</Text>
             </View>
             </Card>
             {youranswer}
             <Card containerStyle={styles.card2}>
-                <Text style={styles.paragraphtitle}>答案解析</Text>
+                <Text style={styles.paragraphtitle}>正確答案</Text>
                 <Paragraph style={styles.paragraph}>
-                    {hint}
+                    {rightanswer}
                 </Paragraph>
             </Card>
             <Button 
@@ -203,4 +194,4 @@ const styles = StyleSheet.create({
         marginTop: 24,
       },
 });
-export default Answer;
+export default TextAnswer;

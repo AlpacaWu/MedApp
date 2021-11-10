@@ -7,6 +7,7 @@ import BlueButton from '../components/BlueButton'
 import Paragraph from '../components/Paragraph'
 import { View } from 'react-native'
 
+
 export default function StartScreen({ navigation }) {
   return (
     <FirstBackground>
