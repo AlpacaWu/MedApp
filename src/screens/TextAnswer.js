@@ -72,9 +72,15 @@ const TextAnswer =({route,navigation})=>{
                 });
             } 
         }else{
-            Alert.alert(json.Object,json.Content,
+            if(json.Content === '權杖失效'){
+                Alert.alert(json.Object,json.Content,
+                [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+                );
+            }else{
+                Alert.alert(json.Object,json.Content,
                 [{text:'再試一次',style:'cancel'}]
                 );
+            }       
         };
         });
     }

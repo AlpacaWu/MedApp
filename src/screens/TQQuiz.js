@@ -76,7 +76,7 @@ export default function TQQuiz ({route,navigation}){
         <TextInput
                 label="你的答案..."
                 returnKeyType="next"
-                value={code.value}
+                value={youranswer}
                 onChangeText={(text) => setYourAnswer(text)}
                 autoCapitalize="none"
             />

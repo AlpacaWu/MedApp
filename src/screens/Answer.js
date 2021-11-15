@@ -32,7 +32,16 @@ const Answer =({route,navigation})=>{
         <Image source={require('../assets/wrong.png')} style={styles.icon}/>
 
     }
-    
+    let hintBlock;
+    if(hint){
+        hintBlock = 
+        <Card containerStyle={styles.card2}>
+            <Text style={styles.paragraphtitle}>答案解析</Text>
+            <Paragraph style={styles.paragraph}>
+                {hint}
+            </Paragraph>
+        </Card>
+    }
     const nextHandler = ()=>{
         let url = Router.host+Router.nextone
         let body = {
@@ -70,14 +79,15 @@ const Answer =({route,navigation})=>{
                         color: "#36b1f0"
                     });
                 }else{
-                    navigation.push("MCQQuiz", {
-                        token:token,
-                        topic: returnquestion.Topic,
-                        question: returnquestion,
-                        choices: returnquestion.Choice,
-                        groupid:returnquestion.GroupID,
-                        color: "#36b1f0"
-                    });
+                    if(json.Content === '權杖失效'){
+                        Alert.alert(json.Object,json.Content,
+                        [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+                        );
+                    }else{
+                        Alert.alert(json.Object,json.Content,
+                        [{text:'再試一次',style:'cancel'}]
+                        );
+                    }
                 };
             } 
         }else{
@@ -95,18 +105,13 @@ const Answer =({route,navigation})=>{
         
             <Card containerStyle={styles.card}>
             <View style={styles.safearea}>
-            {icon}
-            <Text style={styles.title}>{question.QuestionID+". "+question.QuestionTitle}</Text>
-            <Text style={styles.text}>{question.Question}</Text>
-            </View>
+                {icon}
+                <Text style={styles.title}>{question.QuestionID+". "+question.QuestionTitle}</Text>
+                <Text style={styles.text}>{question.Question}</Text>
+                </View>
             </Card>
             {youranswer}
-            <Card containerStyle={styles.card2}>
-                <Text style={styles.paragraphtitle}>答案解析</Text>
-                <Paragraph style={styles.paragraph}>
-                    {hint}
-                </Paragraph>
-            </Card>
+            {hintBlock}
             <Button 
                     mode="contained" 
                     style={styles.button}

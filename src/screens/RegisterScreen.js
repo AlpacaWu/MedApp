@@ -11,6 +11,7 @@ import { theme } from '../core/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
+import { studentnumValidator } from '../helpers/studentnumValidator'
 import { phoneValidator } from '../helpers/phoneValidator'
 import Title from '../components/Title'
 import Router from '../data/router';
@@ -22,11 +23,13 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState({ value: '', error: '' })
   const [isVillager,setIsVillager] = useState(false)
   const [code, setCode] = useState({ value: '', error: '' })
+  
   const onSignUpPressed = () => {
     const nameError = nameValidator(name.value)
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     const phoneError = phoneValidator(phone.value)
+    const studentnumError = studentnumValidator(phone.value)
     let url = Router.host+Router.register
     let body = {
       "name":name.value,
@@ -36,12 +39,21 @@ export default function RegisterScreen({ navigation }) {
       "isvillager":isVillager,
       "code":code.value,
     }
-    if (emailError || passwordError || nameError || phoneError) {
-      setName({ ...name, error: nameError })
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      setPhone({...phone,error:phoneError})
-      return
+    if(!isVillager){
+      if ( passwordError || nameError || studentnumError){
+        setName({ ...name, error: nameError })
+        setPassword({ ...password, error: passwordError })
+        setPhone({...phone,error:studentnumError})
+        return
+      }
+    }else{
+      if (emailError || passwordError || nameError || phoneError) {
+        setName({ ...name, error: nameError })
+        setEmail({ ...email, error: emailError })
+        setPassword({ ...password, error: passwordError })
+        setPhone({...phone,error:phoneError})
+        return
+      }
     }
     fetch(url, {
       method: "POST",
@@ -68,6 +80,8 @@ export default function RegisterScreen({ navigation }) {
     });
   }
   let codeValidatorBlock ;
+  let accountBlock ;
+  let infoBlock ;
   if(!isVillager){
     codeValidatorBlock = 
     <TextInput
@@ -80,6 +94,46 @@ export default function RegisterScreen({ navigation }) {
         autoCapitalize="none"
         keyboardType="numeric"
     />
+    accountBlock = 
+    <TextInput
+        label="學號（帳號）"
+        returnKeyType="next"
+        value={phone.value}
+        onChangeText={(text) => setPhone({ value: text, error: '' })}
+        error={!!phone.error}
+        errorText={phone.error}
+      />
+    infoBlock =
+    <TextInput
+        label="班級號碼"
+        returnKeyType="next"
+        value={email.value}
+        onChangeText={(text) => setEmail({ value: text, error: '' })}
+        autoCapitalize="none"
+      />
+  }else{
+    accountBlock = 
+    <TextInput
+        label="電話號碼（帳號）"
+        returnKeyType="next"
+        value={phone.value}
+        onChangeText={(text) => setPhone({ value: text, error: '' })}
+        error={!!phone.error}
+        errorText={phone.error}
+      />
+    infoBlock =
+    <TextInput
+        label="Email"
+        returnKeyType="next"
+        value={email.value}
+        onChangeText={(text) => setEmail({ value: text, error: '' })}
+        error={!!email.error}
+        errorText={email.error}
+        autoCapitalize="none"
+        autoCompleteType="email"
+        textContentType="emailAddress"
+        keyboardType="email-address"
+      />
   }
   return (
     <Background>
@@ -93,26 +147,8 @@ export default function RegisterScreen({ navigation }) {
         error={!!name.error}
         errorText={name.error}
       />
-      <TextInput
-        label="電話號碼（帳號）"
-        returnKeyType="next"
-        value={phone.value}
-        onChangeText={(text) => setPhone({ value: text, error: '' })}
-        error={!!phone.error}
-        errorText={phone.error}
-      />
-      <TextInput
-        label="Email"
-        returnKeyType="next"
-        value={email.value}
-        onChangeText={(text) => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
-        autoCapitalize="none"
-        autoCompleteType="email"
-        textContentType="emailAddress"
-        keyboardType="email-address"
-      />
+      {accountBlock}
+      {infoBlock}
       <TextInput
         label="密碼"
         returnKeyType="done"

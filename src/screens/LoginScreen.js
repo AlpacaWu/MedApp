@@ -9,12 +9,15 @@ import TextInput from '../components/TextInput'
 import BackButton from '../components/BackButton'
 import { theme } from '../core/theme'
 import { phoneValidator } from '../helpers/phoneValidator'
+import { studentnumValidator } from '../helpers/studentnumValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import Router from '../data/router'
 export default function LoginScreen({ navigation }) {
   const [phone, setPhone] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
   const onLoginPressed = () => {
+    console.log(phone)
+    const studentnumError = studentnumValidator(phone.value)
     const phoneError = phoneValidator(phone.value)
     const passwordError = passwordValidator(password.value)
     let url = Router.host+Router.login
@@ -22,10 +25,16 @@ export default function LoginScreen({ navigation }) {
       "phone":phone.value,
       "password":password.value
     }
-    if (phoneError || passwordError) {
-      setPhone({ ...phone, error: phoneError })
-      setPassword({ ...password, error: passwordError })
-      return
+    if (studentnumError || phoneError || passwordError) {
+      if (studentnumError && phoneError){
+        setPhone({ ...phone, error: "帳號欄位錯誤。" })
+        setPassword({ ...password, error: passwordError })
+        return
+      }
+      if(passwordError){
+        setPassword({ ...password, error: passwordError })
+        return
+      }
     };
     fetch(url, {
       method: "POST",
