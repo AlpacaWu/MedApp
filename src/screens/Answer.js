@@ -63,7 +63,8 @@ const Answer =({route,navigation})=>{
                     token:token,
                     topic:content.Topic,
                     totalpoint:content.TotalPoint,
-                    wholepoint:content.WholePoint
+                    wholepoint:content.WholePoint,
+                    title:content.Title
                 })
             }else{
                 let info = content.Info;
@@ -79,21 +80,26 @@ const Answer =({route,navigation})=>{
                         color: "#36b1f0"
                     });
                 }else{
-                    if(json.Content === '權杖失效'){
-                        Alert.alert(json.Object,json.Content,
-                        [{text:'重新開始',style:'cancel',onPress:restartHandler}]
-                        );
-                    }else{
-                        Alert.alert(json.Object,json.Content,
-                        [{text:'再試一次',style:'cancel'}]
-                        );
-                    }
+                    navigation.push("MCQQuiz", {
+                        token:token,
+                        topic:returnquestion.Topic,
+                        question: returnquestion,
+                        choices: returnquestion.Choice,
+                        groupid:returnquestion.GroupID,
+                        color: "#36b1f0"
+                    });
                 };
             } 
         }else{
-            Alert.alert(json.Object,json.Content,
+            if(json.Content === '權杖失效'){
+                Alert.alert(json.Object,json.Content,
+                [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+                );
+            }else{
+                Alert.alert(json.Object,json.Content,
                 [{text:'再試一次',style:'cancel'}]
                 );
+            }
         };
         });
     }

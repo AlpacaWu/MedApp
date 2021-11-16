@@ -1,11 +1,21 @@
 import React from "react";
-import { View, StyleSheet, StatusBar, Text, SafeAreaView, Alert,ScrollView } from "react-native";
+import { View, StyleSheet, StatusBar, Text, SafeAreaView, Alert,ScrollView ,Image} from "react-native";
 import Button from '../components/Button'
 import Paragraph from '../components/Paragraph'
 import Router from '../data/router';
 const Summary = ({route,navigation}) =>{
-    const {token,topic,totalpoint,wholepoint} = route.params;
-  
+    const {token,topic,totalpoint,wholepoint,title} = route.params;
+    let titleBlock;
+    if(title === 'gold'){
+      titleBlock = <Image source={require('../assets/gold-medal.png')} style={styles.icon}/>
+    }else if(title === 'silver'){
+      titleBlock = <Image source={require('../assets/silver-medal.png')} style={styles.icon}/>
+    }else if(title === 'bronze'){
+      titleBlock = <Image source={require('../assets/bronze-medal.png')} style={styles.icon}/>
+    }else{
+      console.log('No rewards!')
+    }
+
     const unknownHandler=() =>{
         navigation.reset({
             index: 0,
@@ -86,6 +96,7 @@ const Summary = ({route,navigation}) =>{
                 >
                 了解更多
             </Button>
+            {titleBlock}
             </SafeAreaView>
         </ScrollView>
     )
@@ -117,5 +128,11 @@ const styles = StyleSheet.create({
       marginTop: 100,
       justifyContent: "space-between"
     },
+    icon: {
+      width: 110,
+      height: 110,
+      marginBottom: 8,
+      paddingTop: 32,
+  },
 });
 export default Summary;
