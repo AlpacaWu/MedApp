@@ -58,7 +58,8 @@ const TextAnswer =({route,navigation})=>{
                     token:token,
                     topic:content.Topic,
                     totalpoint:content.TotalPoint,
-                    wholepoint:content.WholePoint
+                    wholepoint:content.WholePoint,
+                    title:content.Title
                 })
             }else{
                 let info = content.Info;

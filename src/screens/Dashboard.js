@@ -14,7 +14,7 @@ export default function Dashboard({ route, navigation }) {
     navigation.reset({
         index: 0,
         routes: [{ name: 'StartScreen' }],})
-};
+    };
   const quizIndexHandler = () => {
     let url = Router.host+Router.quizIndex
     let body = {
@@ -84,10 +84,38 @@ export default function Dashboard({ route, navigation }) {
     });
   };
   const prizeHandler = () =>{
-    navigation.navigate('StartScreen', {//問答介面還沒做
-      token: token
-      })
-  };
+    let url = Router.host+Router.getmedal
+    console.log(url)
+    let body = {
+      "token":token
+    }
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify(body)
+    })
+    .then(response => response.json())
+    .then(json => {
+      console.log(json.Result)
+      if(json.Result){
+        let content = json.Content;
+        let medalrecords = content.Records
+        navigation.navigate('Medal', {
+          medalrecords: medalrecords
+        })
+      }else{
+        if(json.Content === '權杖失效'){
+          Alert.alert(json.Object,json.Content,
+            [{text:'重新開始',style:'cancel',onPress:restartHandler}]
+            );
+        }else{
+          Alert.alert(json.Object,json.Content,
+            [{text:'再試一次',style:'cancel'}]
+            );
+        }
+      };
+    });
+  }
+
   const logoutHandler = () =>{
     navigation.reset({
       index: 0,

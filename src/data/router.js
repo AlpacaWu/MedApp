@@ -11,4 +11,5 @@ export default{
    getinfo:'getinfo',
    forgetpassword:'forgetpassword',
    getlink:'getlink',
+   getmedal:'getmedal'
 };

@@ -16,7 +16,8 @@ import {
   TextAnswer,
   Summary,
   Link,
-  TQQuiz
+  TQQuiz,
+  Medal
 } from './src/screens'
 
 const Stack = createStackNavigator()
@@ -43,6 +44,7 @@ export default function App() {
           <Stack.Screen name="TextAnswer" component={TextAnswer}/>
           <Stack.Screen name="Summary" component={Summary}/>
           <Stack.Screen name="Link" component={Link}/>
+          <Stack.Screen name="Medal" component={Medal}/>
           <Stack.Screen
             name="ResetPasswordScreen"
             component={ResetPasswordScreen}
